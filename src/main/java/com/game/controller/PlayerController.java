@@ -26,19 +26,16 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
-    // Get all players
     @GetMapping("/rest/players")
     public ResponseEntity<List<Player>> findAll() {
         return new ResponseEntity<>(playerService.findAll(), HttpStatus.OK);
     }
 
-    // Players count
     @GetMapping("/rest/players/count")
     public ResponseEntity<Long> playerCount() {
         return new ResponseEntity<>(playerService.getCount(), HttpStatus.OK);
     }
 
-    // Get player by id
     @GetMapping("/rest/players/{id}")
     public ResponseEntity<Player> getPlayerById(@PathVariable long id) {
         if (id == 0) {
@@ -49,7 +46,6 @@ public class PlayerController {
         return player.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.valueOf(404)));
     }
 
-    // Delete player by id
     @DeleteMapping("/rest/players/{id}")
     public ResponseEntity<HttpStatus> deleteById(@PathVariable long id) {
         if (id == 0) {
