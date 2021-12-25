@@ -64,30 +64,25 @@ public class PlayerController {
         return new ResponseEntity<>(HttpStatus.valueOf(200));
     }
 
-    // Create player
     @PostMapping(path = "/rest/players/",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Player> createPlayer(@RequestBody Player newPlayer) {
 
-        // Check fields on null
         if (newPlayer.getName() == null || newPlayer.getTitle() == null || newPlayer.getRace() == null
                 || newPlayer.getProfession() == null || newPlayer.getBirthday() == null
                 || newPlayer.getExperience() == null) {
             return new ResponseEntity<>(HttpStatus.valueOf(400));
         }
 
-        // Check fields to meet the criteria
         if (newPlayer.getName().length() > 12 || newPlayer.getTitle().length() > 30 || newPlayer.getName().isEmpty() ||
                 newPlayer.getBirthday().getTime() < 0 || newPlayer.getExperience() > 10000000) {
             return new ResponseEntity<>(HttpStatus.valueOf(400));
         }
 
-        // Fields(level, untilNextLevel) initialization based on passed experience field
         newPlayer.setLevel(convertExpToLvl(newPlayer.getExperience()));
         newPlayer.setUntilNextLevel(calculateExpForNextLvl(newPlayer));
 
-        // Initialization banned field if the request does not contain such field
         if (newPlayer.getBanned() == null) {
             newPlayer.setBanned(false);
         }
