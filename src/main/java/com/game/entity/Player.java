@@ -2,6 +2,8 @@ package com.game.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,7 +15,7 @@ import java.util.Date;
 public class Player {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name")
@@ -21,8 +23,10 @@ public class Player {
     @Column(name = "title")
     private String title;
     @Column(name = "race")
+    @Enumerated(EnumType.STRING)
     private Race race;
     @Column(name = "profession")
+    @Enumerated(EnumType.STRING)
     private Profession profession;
     @Column(name = "birthday")
     private Date birthday;
