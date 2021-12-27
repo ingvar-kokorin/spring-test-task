@@ -121,10 +121,10 @@ public class PlayerController {
 
         if (updatePlayer.getExperience() != null) {
             player.setExperience(updatePlayer.getExperience());
-            player.setLevel(playerService.convertExpToLvl(updatePlayer));
-            player.setUntilNextLevel(playerService.calculateExpForNextLvl(updatePlayer));
+            player.setLevel(playerService.convertExpToLvl(player));
+            player.setUntilNextLevel(playerService.calculateExpForNextLvl(player));
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(player, HttpStatus.OK);
     }
 }
