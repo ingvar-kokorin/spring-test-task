@@ -1,19 +1,22 @@
 package com.game.controller;
 
 import com.game.entity.Player;
+import com.game.entity.Profession;
+import com.game.entity.Race;
 import com.game.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -32,8 +35,66 @@ public class PlayerController {
     }
 
     @GetMapping("/rest/players/count")
-    public ResponseEntity<Long> playerCount() {
-        return new ResponseEntity<>(playerService.getCount(), HttpStatus.OK);
+    public ResponseEntity<Long> playerCount(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Race race,
+            @RequestParam(required = false) Profession profession,
+            @RequestParam(required = false) Long after,
+            @RequestParam(required = false) Long before,
+            @RequestParam(required = false) Boolean banned,
+            @RequestParam(required = false) Integer minExperience,
+            @RequestParam(required = false) Integer maxExperience,
+            @RequestParam(required = false) Integer minLevel,
+            @RequestParam(required = false) Integer maxLevel) {
+        List<Player> players = (List<Player>) playerService.findAll();
+
+        if (name != null) {
+            players.removeIf(player -> !player.getName().contains(name));
+        }
+
+        if (title != null) {
+            players.removeIf(player -> !player.getTitle().contains(title));
+        }
+
+        if (race != null) {
+            players.removeIf(player -> !(player.getRace() == race));
+        }
+
+        if (profession != null) {
+            players.removeIf(player -> !(player.getProfession() == profession));
+        }
+
+        if (after != null) {
+            players.removeIf(player -> !(player.getBirthday().after(new Date(after))));
+        }
+
+        if (before != null) {
+            players.removeIf(player -> !(player.getBirthday().before(new Date(before))));
+        }
+
+        if (banned != null) {
+            players.removeIf(player -> player.getBanned() != banned);
+        }
+
+
+        if (minExperience != null) {
+            players.removeIf(player -> player.getExperience() < minExperience);
+        }
+
+        if (maxExperience != null) {
+            players.removeIf(player -> player.getExperience() > maxExperience);
+        }
+
+        if (minLevel != null) {
+            players.removeIf(player -> player.getLevel() < minLevel);
+        }
+
+        if (maxLevel != null) {
+            players.removeIf(player -> player.getLevel() > maxLevel);
+        }
+
+        return new ResponseEntity<>((long) players.size(), HttpStatus.OK);
     }
 
     @GetMapping("/rest/players/{id}")
@@ -112,6 +173,9 @@ public class PlayerController {
         }
 
         if (updatePlayer.getBirthday() != null) {
+            if (updatePlayer.getBirthday().getTime() <= 0) {
+                return new ResponseEntity<>(HttpStatus.valueOf(400));
+            }
             player.setBirthday(updatePlayer.getBirthday());
         }
 
@@ -120,11 +184,14 @@ public class PlayerController {
         }
 
         if (updatePlayer.getExperience() != null) {
+            if (updatePlayer.getExperience() < 0 || updatePlayer.getExperience() > 10000000) {
+                return new ResponseEntity<>(HttpStatus.valueOf(400));
+            }
             player.setExperience(updatePlayer.getExperience());
             player.setLevel(playerService.convertExpToLvl(player));
             player.setUntilNextLevel(playerService.calculateExpForNextLvl(player));
         }
 
-        return new ResponseEntity<>(player, HttpStatus.OK);
+        return new ResponseEntity<>(playerService.savePlayer(player), HttpStatus.OK);
     }
 }
