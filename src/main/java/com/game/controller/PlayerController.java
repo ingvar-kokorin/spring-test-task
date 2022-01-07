@@ -1,8 +1,7 @@
 package com.game.controller;
 
 import com.game.entity.Player;
-import com.game.entity.Profession;
-import com.game.entity.Race;
+import com.game.entity.PlayerRequestCriteria;
 import com.game.service.PlayerService;
 import com.game.service.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,42 +28,20 @@ public class PlayerController {
     }
 
     @GetMapping("/rest/players")
-    public ResponseEntity<List<Player>> findAll(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) Race race,
-            @RequestParam(required = false) Profession profession,
-            @RequestParam(required = false) Long after,
-            @RequestParam(required = false) Long before,
-            @RequestParam(required = false) Boolean banned,
-            @RequestParam(required = false) Integer minExperience,
-            @RequestParam(required = false) Integer maxExperience,
-            @RequestParam(required = false) Integer minLevel,
-            @RequestParam(required = false) Integer maxLevel,
-            @RequestParam(required = false) PlayerOrder order,
-            @RequestParam(required = false) Integer pageNumber,
-            @RequestParam(required = false) Integer pageSize) {
-        List<Player> players = playerService.filter(name, title, race, profession, after, before, banned,
-                minExperience, maxExperience, minLevel, maxLevel, order, pageNumber, pageSize);
+    public ResponseEntity<List<Player>> findAll(PlayerRequestCriteria criteria) {
+        List<Player> players = playerService.filter(criteria.getName(), criteria.getTitle(), criteria.getRace(), criteria.getProfession(),
+                criteria.getAfter(), criteria.getBefore(), criteria.getBanned(),
+                criteria.getMinExperience(), criteria.getMaxExperience(), criteria.getMinLevel(), criteria.getMaxLevel(),
+                criteria.getOrder(), criteria.getPageNumber(), criteria.getPageSize());
 
         return new ResponseEntity<>(players, HttpStatus.OK);
     }
 
     @GetMapping("/rest/players/count")
-    public ResponseEntity<Long> playerCount(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) Race race,
-            @RequestParam(required = false) Profession profession,
-            @RequestParam(required = false) Long after,
-            @RequestParam(required = false) Long before,
-            @RequestParam(required = false) Boolean banned,
-            @RequestParam(required = false) Integer minExperience,
-            @RequestParam(required = false) Integer maxExperience,
-            @RequestParam(required = false) Integer minLevel,
-            @RequestParam(required = false) Integer maxLevel) {
-        List<Player> players = playerService.count(name, title, race, profession, after, before, banned,
-                minExperience, maxExperience, minLevel, maxLevel);
+    public ResponseEntity<Long> playerCount(PlayerRequestCriteria criteria) {
+        List<Player> players = playerService.count(criteria.getName(), criteria.getTitle(), criteria.getRace(), criteria.getProfession(),
+                criteria.getAfter(), criteria.getBefore(), criteria.getBanned(),
+                criteria.getMinExperience(), criteria.getMaxExperience(), criteria.getMinLevel(), criteria.getMaxLevel());
 
         return new ResponseEntity<>((long) players.size(), HttpStatus.OK);
     }

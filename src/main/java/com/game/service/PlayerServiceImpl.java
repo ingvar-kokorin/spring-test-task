@@ -37,7 +37,7 @@ public class PlayerServiceImpl implements PlayerService {
 
         Page<Player> page = playerRepository.findAll(PageRequest.of(number,
                 size, Sort.by(playerOrder)));
-
+        
         return page.stream().collect(Collectors.toList());
     }
 
