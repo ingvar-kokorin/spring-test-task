@@ -4,6 +4,7 @@ import com.game.entity.Player;
 import com.game.entity.Profession;
 import com.game.entity.Race;
 import com.game.service.PlayerService;
+import com.game.service.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,13 +25,30 @@ public class PlayerController {
     private final PlayerService playerService;
 
     @Autowired
-    public PlayerController(PlayerService playerService) {
+    public PlayerController(PlayerServiceImpl playerService) {
         this.playerService = playerService;
     }
 
     @GetMapping("/rest/players")
-    public ResponseEntity<Iterable<Player>> findAll() {
-        return new ResponseEntity<>(playerService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<Player>> findAll(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Race race,
+            @RequestParam(required = false) Profession profession,
+            @RequestParam(required = false) Long after,
+            @RequestParam(required = false) Long before,
+            @RequestParam(required = false) Boolean banned,
+            @RequestParam(required = false) Integer minExperience,
+            @RequestParam(required = false) Integer maxExperience,
+            @RequestParam(required = false) Integer minLevel,
+            @RequestParam(required = false) Integer maxLevel,
+            @RequestParam(required = false) PlayerOrder order,
+            @RequestParam(required = false) Integer pageNumber,
+            @RequestParam(required = false) Integer pageSize) {
+        List<Player> players = playerService.filter(name, title, race, profession, after, before, banned,
+                minExperience, maxExperience, minLevel, maxLevel, order, pageNumber, pageSize);
+
+        return new ResponseEntity<>(players, HttpStatus.OK);
     }
 
     @GetMapping("/rest/players/count")
@@ -47,52 +64,8 @@ public class PlayerController {
             @RequestParam(required = false) Integer maxExperience,
             @RequestParam(required = false) Integer minLevel,
             @RequestParam(required = false) Integer maxLevel) {
-        List<Player> players = (List<Player>) playerService.findAll();
-
-        if (name != null) {
-            players.removeIf(player -> !player.getName().contains(name));
-        }
-
-        if (title != null) {
-            players.removeIf(player -> !player.getTitle().contains(title));
-        }
-
-        if (race != null) {
-            players.removeIf(player -> !(player.getRace() == race));
-        }
-
-        if (profession != null) {
-            players.removeIf(player -> !(player.getProfession() == profession));
-        }
-
-        if (after != null) {
-            players.removeIf(player -> !(player.getBirthday().after(new Date(after))));
-        }
-
-        if (before != null) {
-            players.removeIf(player -> !(player.getBirthday().before(new Date(before))));
-        }
-
-        if (banned != null) {
-            players.removeIf(player -> player.getBanned() != banned);
-        }
-
-
-        if (minExperience != null) {
-            players.removeIf(player -> player.getExperience() < minExperience);
-        }
-
-        if (maxExperience != null) {
-            players.removeIf(player -> player.getExperience() > maxExperience);
-        }
-
-        if (minLevel != null) {
-            players.removeIf(player -> player.getLevel() < minLevel);
-        }
-
-        if (maxLevel != null) {
-            players.removeIf(player -> player.getLevel() > maxLevel);
-        }
+        List<Player> players = playerService.count(name, title, race, profession, after, before, banned,
+                minExperience, maxExperience, minLevel, maxLevel);
 
         return new ResponseEntity<>((long) players.size(), HttpStatus.OK);
     }
