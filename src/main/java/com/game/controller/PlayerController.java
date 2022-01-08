@@ -28,10 +28,7 @@ public class PlayerController {
 
     @GetMapping("/rest/players")
     public ResponseEntity<List<Player>> findAll(PlayerRequestCriteria criteria) {
-        List<Player> players = playerService.filter(criteria.getName(), criteria.getTitle(), criteria.getRace(), criteria.getProfession(),
-                criteria.getAfter(), criteria.getBefore(), criteria.getBanned(),
-                criteria.getMinExperience(), criteria.getMaxExperience(), criteria.getMinLevel(), criteria.getMaxLevel(),
-                criteria.getOrder(), criteria.getPageNumber(), criteria.getPageSize());
+        List<Player> players = playerService.findAll(criteria);
 
         return new ResponseEntity<>(players, HttpStatus.OK);
     }
