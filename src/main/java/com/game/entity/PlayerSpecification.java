@@ -29,6 +29,7 @@ public class PlayerSpecification {
             temp = temp == null ? specification : Specification.where(specification).and(temp);
         }
 
+        // THIS ONE
         if (criteria.getAfter() != null) {
             specification = getPlayerByAfter(criteria.getAfter());
             temp = temp == null ? specification : Specification.where(specification).and(temp);
@@ -36,7 +37,7 @@ public class PlayerSpecification {
 
         return null;
     }
-
+    // THIS ONE
     private static Specification<Player> getPlayerByAfter(final Long after) {
         return ((root, query, criteriaBuilder) ->
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("birthday")), new Date(after)));
