@@ -40,7 +40,7 @@ public class PlayerServiceImpl implements PlayerService {
         Page<Player> page = playerRepository.findAll(PlayerSpecification.getPlayerByFilter(criteria), PageRequest.of(number,
                 size, Sort.by(playerOrder)));
 
-        return page.stream().collect(Collectors.toList());
+        return page.getContent();
     }
 
     public void deleteById(Long id) {
