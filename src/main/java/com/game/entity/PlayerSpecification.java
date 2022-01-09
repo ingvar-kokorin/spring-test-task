@@ -5,8 +5,9 @@ import org.springframework.data.jpa.domain.Specification;
 import java.sql.Date;
 
 public class PlayerSpecification {
+
     public static Specification<Player> getPlayerByFilter(final PlayerRequestCriteria criteria) {
-        Specification<Player> specification = null;
+        Specification<Player> specification;
         Specification<Player> temp = null;
 
         if (criteria.getName() != null) {
@@ -39,7 +40,7 @@ public class PlayerSpecification {
             temp = temp == null ? specification : Specification.where(specification).and(temp);
         }
 
-        if (criteria.getBefore() != null) {
+        if (criteria.getBanned() != null) {
             specification = getPlayerByBanned(criteria.getBanned());
             temp = temp == null ? specification : Specification.where(specification).and(temp);
         }
@@ -69,32 +70,32 @@ public class PlayerSpecification {
 
     private static Specification<Player> getPlayerByName(final String name) {
         return ((root, query, criteriaBuilder) ->
-                criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name + "%"));
+                criteriaBuilder.like(root.get("name"), "%" + name + "%"));
     }
 
     private static Specification<Player> getPlayerByTitle(String title) {
         return ((root, query, criteriaBuilder) ->
-                criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title + "%"));
+                criteriaBuilder.like(root.get("title"), "%" + title + "%"));
     }
 
     private static Specification<Player> getPlayerByRace(Race race) {
         return ((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(criteriaBuilder.lower(root.get("race")), race));
+                criteriaBuilder.equal(root.get("race"), race));
     }
 
     private static Specification<Player> getPlayerByProfession(Profession profession) {
         return ((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(criteriaBuilder.lower(root.get("profession")), profession));
+                criteriaBuilder.equal(root.get("profession"), profession));
     }
 
     private static Specification<Player> getPlayerByAfter(final Long after) {
         return ((root, query, criteriaBuilder) ->
-                criteriaBuilder.greaterThanOrEqualTo(root.get("birthday"), new Date(after)));
+                criteriaBuilder.greaterThan(root.get("birthday"), new Date(after)));
     }
 
     private static Specification<Player> getPlayerByBefore(final Long before) {
         return ((root, query, criteriaBuilder) ->
-                criteriaBuilder.lessThanOrEqualTo(root.get("birthday"), new Date(before)));
+                criteriaBuilder.lessThan(root.get("birthday"), new Date(before)));
     }
 
     private static Specification<Player> getPlayerByBanned(Boolean banned) {
@@ -121,6 +122,5 @@ public class PlayerSpecification {
         return ((root, query, criteriaBuilder) ->
                 criteriaBuilder.lessThanOrEqualTo(root.get("level"), maxLevel));
     }
-
 }
 
