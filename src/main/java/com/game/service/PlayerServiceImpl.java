@@ -51,6 +51,16 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     public Player savePlayer(Player player) {
+        int level = convertExpToLvl(player);
+        player.setLevel(level);
+
+        int expForNextLvl = calculateExpForNextLvl(player);
+        player.setUntilNextLevel(expForNextLvl);
+
+        if (player.getBanned() == null) {
+            player.setBanned(false);
+        }
+
         return playerRepository.save(player);
     }
 
@@ -65,13 +75,17 @@ public class PlayerServiceImpl implements PlayerService {
         return 50 * (lvl + 1) * (lvl + 2) - exp;
     }
 
-    public boolean isRequestContainsNull(Player player) {
+    public boolean isValidPlayer(Player player) {
+        return !isRequestContainsNull(player) && isRequestMatchCriteria(player);
+    }
+
+    private boolean isRequestContainsNull(Player player) {
         return player.getName() == null || player.getTitle() == null || player.getRace() == null
                 || player.getProfession() == null || player.getBirthday() == null
                 || player.getExperience() == null;
     }
 
-    public boolean isRequestMatchCriteria(Player player) {
+    private boolean isRequestMatchCriteria(Player player) {
         return player.getName().length() <= 12 && player.getTitle().length() <= 30 && !player.getName().isEmpty() &&
                 player.getBirthday().getTime() >= 0 && player.getExperience() <= 10000000;
     }

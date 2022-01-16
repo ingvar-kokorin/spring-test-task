@@ -22,9 +22,7 @@ public interface PlayerService {
 
     Integer calculateExpForNextLvl(Player player);
 
-    boolean isRequestContainsNull(Player player);
-
-    boolean isRequestMatchCriteria(Player player);
+    boolean isValidPlayer(Player player);
 
     List<Player> count(
             String name,

@@ -66,28 +66,14 @@ public class PlayerController {
         return new ResponseEntity<>(HttpStatus.valueOf(200));
     }
 
-    @PostMapping(path = "/rest/players/")
-    public ResponseEntity<Player> createPlayer(@RequestBody Player newPlayer) {
+    @PostMapping(path = "/rest/players")
+    public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
 
-        if (playerService.isRequestContainsNull(newPlayer)) {
-            return new ResponseEntity<>(HttpStatus.valueOf(400));
+        if (!playerService.isValidPlayer(player)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        if (!playerService.isRequestMatchCriteria(newPlayer)) {
-            return new ResponseEntity<>(HttpStatus.valueOf(400));
-        }
-
-        int level = playerService.convertExpToLvl(newPlayer);
-        newPlayer.setLevel(level);
-
-        int expForNextLvl = playerService.calculateExpForNextLvl(newPlayer);
-        newPlayer.setUntilNextLevel(expForNextLvl);
-
-        if (newPlayer.getBanned() == null) {
-            newPlayer.setBanned(false);
-        }
-
-        return new ResponseEntity<>(playerService.savePlayer(newPlayer), HttpStatus.OK);
+        return new ResponseEntity<>(playerService.savePlayer(player), HttpStatus.OK);
     }
 
     @PostMapping(path = "/rest/players/{id}")
